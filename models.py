@@ -18,6 +18,18 @@ class Channel(Base):
     channel_id = Column(Integer)
     channel_type = Column(String)
     # Channel Types:
-    # None, Singing, Moderation
+    # See channelTypes in init.py
+
+class Typo(Base):
+    """registers typos"""
+    __tablename__ = "Typo"
+    id = Column(Integer, primary_key=True, index=True)
+    message_url = Column(String)
+    channel_id = Column(Integer)
+    user_id = Column(Integer)
+    guild_id = Column(Integer)
+    reporter_id = Column(Integer)
+    public_msg_id = Column(Integer)
+    blocked = Column(Integer)
 
 Base.metadata.create_all(engine)
