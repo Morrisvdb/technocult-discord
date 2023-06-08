@@ -14,6 +14,7 @@ class Moderation(commands.Cog):
 
     @discord.slash_command(name="remove-typo", description="Remove a typo from the typo channel.", guild_ids=[977513866097479760, 1047234879743611034])
     @guild_only()
+    @commands.has_permissions(manage_messages=True)
     async def removeTypo(self, ctx: discord.ApplicationContext,
                          link: Option(input_type=str, description="The message that contains the typo.", required=True),
                          block: Option(input_type=str, description="Whether or not to block this typo form being registered again.", required=False, choices=["yes", "no"])):
@@ -36,7 +37,6 @@ class Moderation(commands.Cog):
                 )
                 await ctx.respond(embed=doesNotExistEmbed)
             else:
-                print("Ping")
                 if block == "yes":
                     typo.blocked = True
                     db.add(typo)
@@ -44,8 +44,12 @@ class Moderation(commands.Cog):
                     db.delete(typo)
                 db.commit()
                 typoPublicMessage = await bot.get_channel(typoChannel.channel_id).fetch_message(typo.public_msg_id)
-                print("Ping")
-                await typoPublicMessage.delete()
+                deletedEmbed = discord.Embed(
+                    title="Typo removed!",
+                    description="""This typo has been removed by and admin.""",
+                    color=discord.Color.orange()
+                )
+                await typoPublicMessage.edit(embed=deletedEmbed)
                 removedEmbed = discord.Embed(
                     title="Typo removed!",
                     description="""The typo has been removed from the typo channel.""",

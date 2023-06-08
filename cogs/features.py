@@ -45,7 +45,7 @@ class Features(commands.Cog):
     async def typo(self, ctx: discord.ApplicationContext,
                    link: Option(input_type=str, description="The message that contains the typo.", required=True)
                    ):
-        typoChannel = db.query(Channel).filter_by(guild_id=ctx.guild.id, channel_id=ctx.channel.id, channel_type="typo").first()
+        typoChannel = db.query(Channel).filter_by(guild_id=ctx.guild.id, channel_type="typo").first()
         if typoChannel is None:
             embed = discord.Embed(
                 title="Command is disabled!",
@@ -58,12 +58,20 @@ class Features(commands.Cog):
             if validLink:
                 typo = db.query(Typo).filter_by(message_url=link).first()
                 if typo is not None:
-                    alreadyReportedEmbed = discord.Embed(
-                        title="Typo already reported!",
-                        description=f"This typo has already been reported by another user. \n User: {bot.get_user(typo.reporter_id)}",
-                        color=discord.Color.orange()
-                    )
-                    await ctx.respond(embed=alreadyReportedEmbed)
+                    if typo.blocked:
+                        isBlockedEmbed = discord.Embed(
+                            title="Typo blocked!",
+                            description="This typo has been blocked by an admin.",
+                            color=discord.Color.orange()
+                        )
+                        await ctx.respond(embed=isBlockedEmbed)
+                    else:
+                        alreadyReportedEmbed = discord.Embed(
+                            title="Typo already reported!",
+                            description=f"This typo has already been reported by another user. \n User: {bot.get_user(typo.reporter_id)}",
+                            color=discord.Color.orange()
+                        )
+                        await ctx.respond(embed=alreadyReportedEmbed)
                 else:
                     try:
                         newTypo = Typo(message_url=link, channel_id=ctx.channel.id, user_id=ctx.author.id, guild_id=ctx.guild.id, reporter_id=ctx.author.id)
