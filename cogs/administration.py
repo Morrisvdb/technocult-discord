@@ -3,18 +3,27 @@ from discord import Option, guild_only
 from discord.ext import commands
 import sqlalchemy.exc
 """Import other functions"""
-from init import bot, db, db_error
+from init import bot, db, db_error, channelTypes
 from models import Channel
 
-class Management(commands.Cog):
+class Administration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @discord.slash_command(name="feature", description="Add a feature to a channel unclocking the commands paired with that feature.", guild_ids=[977513866097479760, 1047234879743611034])
+    @discord.slash_command(name="feature",
+                           description="Add a feature to a channel unclocking the commands paired with that feature.",
+                           guild_ids=[977513866097479760, 1047234879743611034])
     @guild_only()
     async def channel_feature(self, ctx: discord.ApplicationContext,
-                    action: Option(input_type=str, description="The action you want to perform.", required=True, choices=["add", "remove", "info"]),
-                    feature: Option(input_type=str, description="The feature you want to add or remove.", choices=["singing", "e-wars"], required=False)
+                    action: Option(input_type=str,
+                                   description="The action you want to perform.",
+                                   required=True,
+                                   choices=["add", "remove", "info"]),
+                    
+                    feature: Option(input_type=str,
+                                    description="The feature you want to add or remove.",
+                                    choices=channelTypes,
+                                    required=False)
                     ):
 
         """Adds a feature to a channel unclocking the commands paired with that feature."""
@@ -96,4 +105,4 @@ class Management(commands.Cog):
         db.commit()
 
 def setup(bot):
-    bot.add_cog(Management(bot))
+    bot.add_cog(Administration(bot))

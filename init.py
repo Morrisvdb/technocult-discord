@@ -18,6 +18,9 @@ Base = declarative_base()
 bot = commands.Bot(intents=discord.Intents.all(), command_prefix="!")
 
 
+channelTypes = ["singing", "e-wars", "typo"]
+
+
 async def db_error(ctx):
     """Sends an embed to the user when there is an error with the database."""
     embed = discord.Embed(
